@@ -17,10 +17,10 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Aro1914/AroTable.git"
+    "url": "git://github.com/Aro1914/AroTable-For-Server-Side.git"
   },
   "bugs": {
-    "url": "https://github.com/Aro1914/AroTable/issues"
+    "url": "https://github.com/Aro1914/AroTable-For-Server-Side/issues"
   },
-  "homepage": "https://github.com/Aro1914/AroTable#readme"
+  "homepage": "https://github.com/Aro1914/AroTable-For-Server-Side/#readme"
 }
