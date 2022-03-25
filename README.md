@@ -51,7 +51,7 @@ npm install arotable-cjs
 Now when that is done, in your application code, using 'require()', import 'arotable-cjs' and assign a new instance of the AroTable class to a variable:
 
 ```js
-const AroTable = require('arotable-cjs');
+var AroTable = require('arotable-cjs');
 
 const aroTable = new AroTable();
 ```
