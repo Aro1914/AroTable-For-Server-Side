@@ -19,7 +19,7 @@
 /**
  * A self sorting integer data structure
  */
-exports.module = class AroTable {
+module.exports = class AroTable {
     #pos = {};
     #neg = {};
     #negLength = 0;
