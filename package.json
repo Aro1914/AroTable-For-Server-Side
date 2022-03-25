@@ -1,0 +1,26 @@
+{
+  "name": "arotable-cjs",
+  "version": "0.0.9",
+  "description": "A self sorting integer data structure.",
+  "main": "AroTable.js",
+  "scripts": {
+    "test": "echo \"No test specified\""
+  },
+  "keywords": [
+    "AroTable",
+    "Sorted",
+    "Integer",
+    "Data-Structure"
+  ],
+  "author": "Emmanuel Agbavwe",
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Aro1914/AroTable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Aro1914/AroTable/issues"
+  },
+  "homepage": "https://github.com/Aro1914/AroTable#readme"
+}
