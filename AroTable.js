@@ -34,160 +34,118 @@ module.exports = class AroTable {
         this.add(data, ...values);
     }
 
-    #aroSort (array) {
-        return array === null || array === undefined ?
-            ([])() : array.length <= 1 ?
-                (array)() :
-                (() => {
-                    const pos = {}, neg = {}, sorted = [];
-                    let negLength = 0, counter = 1;
+    #mergeSort (array) {
+        if (array.length <= 1) return array;
 
-                    for (let index = 0; index < array.length; index++) (() => {
-                        let element = Number(array[index]);
-                        element < 0 ?
-                            (() => {
-                                element *= -1;
-                                neg[element] ?
-                                    neg[element]++ :
-                                    neg[element] = 1;
-                                negLength++;
-                            })() :
-                            pos[element] ?
-                                pos[element]++ :
-                                pos[element] = 1;
-                    })();
-                    (negLength) && (() => {
-                        for (const numValue in neg) (() => {
-                            neg[numValue] > 1 ?
-                                (() => {
-                                    for (let i = 0; i < neg[numValue]; i++)
-                                        (() => {
-                                            sorted[negLength - counter] = Number(numValue) * -1;
-                                            counter++;
-                                        })();
-                                })() :
-                                (() => {
-                                    sorted[negLength - counter] = Number(numValue) * -1;
-                                    counter++;
-                                })();
-                        })();
-                    })();
+        const middle_index = Math.floor(array.length / 2),
+            left_values = this.#mergeSort(array.slice(0, middle_index)),
+            right_values = this.#mergeSort(array.slice(middle_index)),
+            left_length = left_values.length,
+            right_length = right_values.length;
 
-                    (Object.keys(pos).length) &&
-                        (() => {
-                            for (const numValue in pos) (() => {
-                                pos[numValue] > 1 ?
-                                    (() => {
-                                        for (let i = 0; i < pos[numValue]; i++) (() => {
-                                            sorted[negLength] = Number(numValue);
-                                            negLength++;
-                                        })();
-                                    })() :
-                                    (() => {
-                                        sorted[negLength] = Number(numValue);
-                                        negLength++;
-                                    })();
-                            })();
-                        })();
-                    return sorted;
-                })();
+        let left_index = 0,
+            right_index = 0,
+            sorted_values = [];
+
+        while (left_index < left_length && right_index < right_length)
+            left_values[left_index] < right_values[right_index] ?
+                (sorted_values.push(left_values[left_index]),
+                    left_index++)
+                :
+                (sorted_values.push(right_values[right_index]),
+                    right_index++);
+
+        sorted_values = sorted_values.concat(left_values.slice(left_index)),
+            sorted_values = sorted_values.concat(right_values.slice(right_index));
+
+        return sorted_values;
     };
 
     #arrange () {
         let counter = 1;
-        (() => {
-            this.#indices = {};
+        this.#indices = {},
             this.#array = [];
-            (this.#negLength > 0) &&
-                (() => {
-                    for (const numValue in this.#neg) {
-                        isNaN(numValue) && (() => false)();
-
-                        if (this.#neg[numValue] > 1)
-                            (() => {
-                                for (let i = 0; i < this.#neg[numValue]; i++) (() => {
-                                    this.#array[this.#negLength - counter] = Number(numValue) * -1;
-
-                                    this.#indices[numValue * -1] ?
-                                        this.#indices[numValue * -1] = [Number(this.#negLength - counter), ...this.#indices[numValue * -1]] :
-                                        this.#indices[numValue * -1] = [Number(this.#negLength - counter)];
-
-                                    counter++;
-                                })();
-                            })();
-                        else if (this.#neg[numValue] > 0)
-                            (() => {
-                                this.#array[this.#negLength - counter] = Number(numValue) * -1;
-
-                                this.#indices[numValue * -1] ?
-                                    this.#indices[numValue * -1] = [Number(this.#negLength - counter), ...this.#indices[numValue * -1]] :
-                                    this.#indices[numValue * -1] = [Number(this.#negLength - counter)];
-
-                                counter++;
-                            })();
-                        else continue;
-                    }
-                })();
-        })();
-
-
-        (Object.keys(this.#pos).length) &&
-            (() => {
-                const negLength = this.#negLength;
-
-                for (const numValue in this.#pos) {
-                    isNaN(numValue) && (() => false)();
-
-                    if (this.#pos[numValue] > 1) (() => {
-                        for (let i = 0; i < this.#pos[numValue]; i++) (() => {
-                            this.#array[this.#negLength] = Number(numValue);
-
-                            this.#indices[numValue] ?
-                                this.#indices[numValue][this.#indices[numValue].length] = (Number(this.#negLength)) :
-                                this.#indices[numValue] = [Number(this.#negLength)];
-
-                            this.#negLength++;
-                        })();
-                    })();
-                    else if (this.#pos[numValue] > 0) (() => {
-                        this.#array[this.#negLength] = Number(numValue);
-
-                        this.#indices[numValue] ?
-                            this.#indices[numValue][this.#indices[numValue].length] = (Number(this.#negLength)) :
-                            this.#indices[numValue] = [Number(this.#negLength)];
-
-                        this.#negLength++;
-                    })();
-                    else continue;
+        if (this.#negLength) {
+            let tempNegLength = this.#negLength;
+            for (const numValue in this.#neg) {
+                if (isNaN(numValue)) continue;
+                const num = numValue * -1, diff = this.#neg[numValue];
+                tempNegLength -= diff;
+                if (this.#neg[numValue] > 1) {
+                    let i = 0;
+                    for (i; i < this.#neg[numValue]; i++)
+                        this.#array[this.#negLength - counter] = Number(numValue) * -1,
+                            this.#indices[num] ?
+                                this.#indices[num][1]++ :
+                                this.#indices[num] = [tempNegLength, 1],
+                            counter++;
                 }
+                else if (this.#neg[numValue] == 1)
+                    this.#array[this.#negLength - counter] = Number(numValue) * -1,
+                        this.#indices[num] ?
+                            this.#indices[num][1]++ :
+                            this.#indices[num] = [tempNegLength, 1],
+                        counter++;
+                else continue;
+            }
+        }
 
-                this.#negLength = negLength;
-            })();
+        if (Object.keys(this.#pos).length) {
+            const negLength = this.#negLength;
+
+            for (const numValue in this.#pos) {
+                if (isNaN(numValue)) continue;
+
+                if (this.#pos[numValue] > 1) {
+                    let i = 0;
+                    for (i; i < this.#pos[numValue]; i++)
+                        this.#array[this.#negLength] = Number(numValue),
+                            this.#indices[numValue] ?
+                                this.#indices[numValue][1]++ :
+                                this.#indices[numValue] = [Number(this.#negLength), 1],
+                            this.#negLength++;
+                }
+                else if (this.#pos[numValue] == 1)
+                    this.#array[this.#negLength] = Number(numValue),
+                        this.#indices[numValue] ?
+                            this.#indices[numValue][1]++ :
+                            this.#indices[numValue] = [Number(this.#negLength), 1],
+                        this.#negLength++;
+                else continue;
+            }
+
+            this.#negLength = negLength;
+        }
     };
 
     #insert (integer) {
-        (!integer || integer == null || integer == undefined || isNaN(integer) || integer === '') && (() => false)();
-        integer < 0 ?
-            (() => {
-                integer *= -1;
+        if (!integer ||
+            integer == null ||
+            integer == undefined ||
+            isNaN(integer) ||
+            integer === '') return false;
+        if (integer < 0)
+            integer *= -1,
                 this.#neg[integer] ?
                     this.#neg[integer]++ :
-                    this.#neg[integer] = 1;
-
+                    this.#neg[integer] = 1,
                 this.#negLength++;
-            })() :
+        else
             this.#pos[integer] ?
                 this.#pos[integer]++ :
                 this.#pos[integer] = 1;
-
-        this.#arrange();
 
         return;
     }
 
     #insertArray (integers) {
-        (integers == null || integers == undefined || integers.length == 0 || !Array.isArray(integers)) && (() => false)();
-        for (let index = 0; index < integers.length; index++) {
+        if (integers == null ||
+            integers == undefined ||
+            !integers.length ||
+            !Array.isArray(integers)) return false;
+
+        let index = 0;
+        for (index; index < integers.length; index++) {
             if (Array.isArray(integers[index])) {
                 this.#insertArray(integers[index]);
                 continue;
@@ -198,20 +156,17 @@ module.exports = class AroTable {
             if (integers[index] === '') continue;
 
             let element = Number(integers[index]);
-            element < 0 ?
-                (() => {
-                    element *= -1;
+            if (element < 0)
+                element *= -1,
                     this.#neg[element] ?
                         this.#neg[element]++ :
-                        this.#neg[element] = 1;
-
+                        this.#neg[element] = 1,
                     this.#negLength++;
-                })() :
+            else
                 this.#pos[element] ?
                     this.#pos[element]++ :
                     this.#pos[element] = 1;
-        };
-        this.#arrange();
+        }
 
         return;
     }
@@ -229,55 +184,59 @@ module.exports = class AroTable {
         Array.isArray(data) ?
             this.#insertArray(data) : data ? this.#insert(data) : false;
 
+        this.#arrange();
+
         return previousLength == this.#array.length ? false : true;
     }
 
     /**
-     * Searches for an occurrence of the given value in the AroTable. Returns the indices of each occurrence if found, if not returns false.
-     * @param {Number} value
+     * Searches for an occurrence of the given integer in the AroTable. Returns an array with two values, the first is the first index the integer occurred in the AroTable, and the second shows how many times it occurred. If no occurrence is found, returns false.
+     * @param {Number} integer
      * @returns {Array<Number>} array
      */
-    search (value) {
-        (value == null || value == undefined || isNaN(value)) && (() => false)();
-        return this.#indices[Number(value)] ? this.#indices[Number(value)] : false;
+    search (integer) {
+        if (integer == null ||
+            integer == undefined ||
+            isNaN(integer)) return false;
+        return this.#indices[Number(integer)] ? this.#indices[Number(integer)] : false;
     }
 
     /**
-     * Deletes the first occurrence of the integer from the AroTable. Returns true if successful, returns false if not.
+     * Deletes the first occurrence of the given integer from the AroTable. Returns true if successful, returns false if not.
      * @param {Number} integer
      */
     remove (integer) {
-        return this.search(integer) !== false ?
-            ((() => {
-                Number(integer) < 0 ?
-                    (() => {
-                        this.#neg[Number(integer * -1)]--;
-                        this.#negLength--;
-                    })() :
-                    this.#pos[Number(integer)]--;
-                this.#arrange();
-                return true;
-            }))() :
-            (() => false)();
+        if (this.search(integer)) {
+            if (Number(integer) < 0)
+                this.#neg[Number(integer * -1)]--,
+                    this.#negLength--;
+            else
+                this.#pos[Number(integer)]--;
+
+            this.#arrange();
+
+            return true;
+        } else
+            return false;
     }
 
     /**
-     * Deletes all occurrences of the integer from the AroTable. Returns true if successful, returns false if not.
+     * Deletes all occurrences of the given integer from the AroTable. Returns true if successful, returns false if not.
      * @param {Number} integer
      */
     removeAll (integer) {
-        return this.search(integer) !== false ?
-            ((() => {
-                Number(integer) < 0 ?
-                    (() => {
-                        this.#negLength -= this.#neg[Number(integer * -1)];
-                        this.#neg[Number(integer * -1)] = 0;
-                    })() :
-                    this.#pos[Number(integer)] = 0;
-                this.#arrange();
-                return true;
-            }))() :
-            (() => false)();
+        if (this.search(integer)) {
+            if (Number(integer) < 0)
+                this.#negLength -= this.#neg[Number(integer * -1)],
+                    this.#neg[Number(integer * -1)] = 0;
+            else
+                this.#pos[Number(integer)] = 0;
+
+            this.#arrange();
+
+            return true;
+        } else
+            return false;
     }
 
     /**
@@ -292,11 +251,11 @@ module.exports = class AroTable {
      * Wipes the AroTable clean.
      */
     empty () {
-        this.#pos = {};
-        this.#neg = {};
-        this.#negLength = 0;
-        this.#indices = {};
-        this.#array = [];
+        this.#pos = {},
+            this.#neg = {},
+            this.#negLength = 0,
+            this.#indices = {},
+            this.#array = [];
     }
 
     /**
@@ -305,8 +264,8 @@ module.exports = class AroTable {
     dropPositives () {
         const previousLength = this.#array.length;
 
-        this.#pos = {};
-        this.#arrange();
+        this.#pos = {},
+            this.#arrange();
 
         return previousLength == this.#array.length ? false : true;
     }
@@ -317,9 +276,9 @@ module.exports = class AroTable {
     dropNegatives () {
         const previousLength = this.#array.length;
 
-        this.#neg = {};
-        this.#negLength = 0;
-        this.#arrange();
+        this.#neg = {},
+            this.#negLength = 0,
+            this.#arrange();
 
         return previousLength == this.#array.length ? false : true;
     }
@@ -330,21 +289,14 @@ module.exports = class AroTable {
     dropUnits () {
         const previousLength = this.#array.length;
 
-        for (const intCount in this.#neg) (() => {
-            this.#neg[intCount] == 1 ?
-                (() => {
-                    this.#negLength -= this.#neg[intCount];
+        for (const intCount in this.#neg)
+            if (this.#neg[intCount] == 1)
+                this.#negLength -= this.#neg[intCount],
                     this.#neg[intCount] = 0;
-                })()
-                :
-                false;
-        })();
 
-        for (const intCount in this.#pos) (() => {
-            this.#pos[intCount] == 1 ?
-                this.#pos[intCount] = 0 :
-                false;
-        })();
+        for (const intCount in this.#pos)
+            if (this.#pos[intCount] == 1)
+                this.#pos[intCount] = 0;
 
         this.#arrange();
 
@@ -357,21 +309,14 @@ module.exports = class AroTable {
     dropDuplicates () {
         const previousLength = this.#array.length;
 
-        for (const intCount in this.#neg) (() => {
-            this.#neg[intCount] > 1 ?
-                (() => {
-                    this.#negLength -= this.#neg[intCount];
+        for (const intCount in this.#neg)
+            if (this.#neg[intCount] > 1)
+                this.#negLength -= this.#neg[intCount],
                     this.#neg[intCount] = 0;
-                })()
-                :
-                false;
-        })();
 
-        for (const intCount in this.#pos) (() => {
-            this.#pos[intCount] > 1 ?
-                this.#pos[intCount] = 0 :
-                false;
-        })();
+        for (const intCount in this.#pos)
+            if (this.#pos[intCount] > 1)
+                this.#pos[intCount] = 0;
 
         this.#arrange();
 
@@ -384,21 +329,15 @@ module.exports = class AroTable {
     clearDuplicates () {
         const previousLength = this.#array.length;
 
-        for (const intCount in this.#neg) (() => {
-            this.#neg[intCount] > 0 ?
-                (() => {
-                    this.#negLength -= (this.#neg[intCount] - 1);
+        for (const intCount in this.#neg)
+            if (this.#neg[intCount] > 0)
+                this.#negLength -= (this.#neg[intCount] - 1),
                     this.#neg[intCount] = 1;
-                })()
-                :
-                false;
-        })();
 
-        for (const intCount in this.#pos) (() => {
-            this.#pos[intCount] > 0 ?
-                this.#pos[intCount] = 1
-                : false;
-        })();
+
+        for (const intCount in this.#pos)
+            if (this.#pos[intCount] > 0)
+                this.#pos[intCount] = 1;
 
         this.#arrange();
 
@@ -411,27 +350,19 @@ module.exports = class AroTable {
      * @returns {Array<Number>} array
      */
     returnDuplicates () {
-        let duplicates = [];
+        const duplicates = [];
         let index = 0;
-        for (const int in this.#neg) (() => {
-            this.#neg[int] > 1 ?
-                (() => {
-                    duplicates[index] = Number(int * -1);
+        for (const int in this.#neg)
+            if (this.#neg[int] > 1)
+                duplicates[index] = Number(int * -1),
                     index++;
-                })() :
-                false;
-        })();
 
-        for (const int in this.#pos) (() => {
-            this.#pos[int] > 1 ?
-                (() => {
-                    duplicates[index] = Number(int);
+        for (const int in this.#pos)
+            if (this.#pos[int] > 1)
+                duplicates[index] = Number(int),
                     index++;
-                })() :
-                false;
-        })();
 
-        return duplicates.length > 0 ? this.#aroSort(duplicates) : false;
+        return duplicates.length > 0 ? this.#mergeSort(duplicates) : false;
     }
 
     /**
@@ -439,27 +370,19 @@ module.exports = class AroTable {
      * @returns {Array<Number>} array
      */
     returnUnits () {
-        let units = [];
+        const units = [];
         let index = 0;
-        for (const int in this.#neg) (() => {
-            this.#neg[int] == 1 ?
-                (() => {
-                    units[index] = Number(int * -1);
+        for (const int in this.#neg)
+            if (this.#neg[int] == 1)
+                units[index] = Number(int * -1),
                     index++;
-                })() :
-                false;
-        })();
 
-        for (const int in this.#pos) (() => {
-            this.#pos[int] == 1 ?
-                (() => {
-                    units[index] = Number(int);
+        for (const int in this.#pos)
+            if (this.#pos[int] == 1)
+                units[index] = Number(int),
                     index++;
-                })() :
-                false;
-        })();
 
-        return units.length > 0 ? this.#aroSort(units) : false;
+        return units.length > 0 ? this.#mergeSort(units) : false;
     }
 
     /**
@@ -469,16 +392,12 @@ module.exports = class AroTable {
     returnNegatives () {
         const negatives = [];
         let index = 0;
-        for (const neg in this.#neg) {
-            if (this.#neg[neg] != 0) {
-                negatives[index] = Number(neg * -1);
-                index++;
-            } else {
-                continue;
-            }
-        }
+        for (const neg in this.#neg)
+            if (this.#neg[neg] != 0)
+                negatives[index] = Number(neg * -1),
+                    index++;
 
-        return negatives.length > 0 ? this.#aroSort(negatives) : false;
+        return negatives.length > 0 ? this.#mergeSort(negatives) : false;
     }
 
     /**
@@ -488,16 +407,12 @@ module.exports = class AroTable {
     returnPositives () {
         const positives = [];
         let index = 0;
-        for (const pos in this.#pos) {
-            if (this.#pos[pos] != 0) {
-                positives[index] = Number(pos);
-                index++;
-            } else {
-                continue;
-            }
-        }
+        for (const pos in this.#pos)
+            if (this.#pos[pos] != 0)
+                positives[index] = Number(pos),
+                    index++;
 
-        return positives.length > 0 ? this.#aroSort(positives) : false;
+        return positives.length > 0 ? this.#mergeSort(positives) : false;
     }
 
     /**
@@ -522,9 +437,8 @@ module.exports = class AroTable {
      */
     getDistribution () {
         return {
-            'Positive Integers':
-                Number(this.#array.length - this.#negLength),
+            'Positive Integers': Number(this.#array.length - this.#negLength),
             'Negative Integers': Number(this.#negLength)
         };
     }
-}
+};
