@@ -1,6 +1,6 @@
 {
-  "name": "arotable-cjs",
-  "version": "3.0.9",
+  "name": "@aro1914/arotable-cjs",
+  "version": "4.0.1",
   "description": "A self sorting integer data structure.",
   "main": "AroTable.js",
   "scripts": {
