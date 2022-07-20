@@ -1,7 +1,7 @@
 {
-  "name": "@aro1914/arotable-cjs",
+  "name": "arotable-cjs",
   "version": "4.0.1",
-  "description": "A self sorting integer data structure.",
+  "description": "A self sorting number data structure.",
   "main": "AroTable.js",
   "scripts": {
     "test": "echo \"No test specified\""
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Aro1914/AroTable-For-Server-Side/issues"
   },
-  "homepage": "https://github.com/Aro1914/AroTable-For-Server-Side/#readme"
+  "homepage": "https://github.com/Aro1914/AroTable-For-Server-Side/#readme",
+  "dependencies": {
+    "np": "^7.6.2"
+  }
 }
