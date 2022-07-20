@@ -1,8 +1,8 @@
-# AroTable (For Client Side)
+# AroTable (For Server Side)
 
 ## Contents
 
-- [AroTable (For Client Side)](#arotable-for-client-side)
+- [AroTable (For Server Side)](#arotable-for-server-side)
   - [Contents](#contents)
   - [Description](#description)
   - [Usage](#usage)
