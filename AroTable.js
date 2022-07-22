@@ -19,7 +19,7 @@
 /**
  * A self-sorting number data structure
  */
- module.exports = class AroTable {
+module.exports = class AroTable {
     #pos = {};
     #neg = {};
     #negLength = 0;
@@ -564,8 +564,8 @@
      */
     getDistribution () {
         return {
-            'Positive Integers': Number(this.#array.length - this.#negLength),
-            'Negative Integers': Number(this.#negLength)
+            'Positive Numbers': Number(this.#array.length - this.#negLength),
+            'Negative Numbers': Number(this.#negLength)
         };
     }
-}
+};
