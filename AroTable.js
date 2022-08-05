@@ -19,7 +19,7 @@
 /**
  * A self-sorting number data structure
  */
- module.exports = class AroTable {
+module.exports = class AroTable {
     #pos = {};
     #neg = {};
     #negLength = 0;
@@ -266,7 +266,7 @@
                 this.#enforceRemoveAll(numbers[i]);
         }
         if (Array.isArray(number)) {
-            const numLength = numbers.length;
+            const numLength = number.length;
             let i = 0;
             for (i; i < numLength; i++)
                 this.#enforceRemoveAll(number[i]);
@@ -761,4 +761,4 @@
             'Negative Numbers': Number(this.#negLength)
         };
     }
-}
+};
